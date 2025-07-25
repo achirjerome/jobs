@@ -1,0 +1,94 @@
+﻿@page
+@model Jobs.Pages.Admin.jobs_manager.upsertModel
+@{
+    ViewData["Title"] = 
+    Layout = "_layout2";
+}
+@section Sheets{
+    <link href="~/lib/flatpickr/flatpickr.css" rel="stylesheet" />
+}
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">@(Model.IsEditMode ? "Update Job" : "Create New Job")</h4>
+            <a asp-page="index" class="btn btn-light btn-sm">
+                <i class="mdi mdi-arrow-left-thick"></i> Back
+            </a>
+        </div>
+        <div class="card-body">
+            @if(TempData["success"]!=null)
+            {
+                <div class="alert alert-success alert-dismissible fade show  mb-3 mt-2" role="alert">
+                        <strong>Information!</strong> @TempData["success"]
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            }
+            @if(TempData["error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show  mb-3 mt-2" role="alert">
+                    <strong>Error! </strong> @TempData["error"]
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            }
+            <form method="post">
+                <input type="hidden" asp-for="Job.Id" />
+
+                <div class="mb-3">
+                    <label asp-for="Job.Title" class="form-label"></label>
+                    <input asp-for="Job.Title" class="form-control" placeholder="Enter job title" />
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Job.StartDate" class="form-label"></label>
+                        <input asp-for="Job.StartDate" type="text" class="form-control" />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Job.ClosingDate" class="form-label"></label>
+                        <input asp-for="Job.ClosingDate" type="text" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Job.Description" class="form-label"></label>
+                    <textarea asp-for="Job.Description" id="elm1" class="form-control" rows="4" placeholder="Describe the job"></textarea>
+                </div>
+
+
+                @* <div class="mb-3">
+                    <label asp-for="Job.DepartmentId" class="form-label">Department</label>
+                    <select asp-for="Job.DepartmentId" class="form-select" asp-items="Model.DepartmentOptions">
+                        <option value="">-- Select Department --</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Job.NeededQualification" class="form-label">Needed Qualifications</label>
+                    <textarea asp-for="Job.NeededQualification" id="elm1"  placeholder="e.g., B.Sc,Biology and experience needed, etc."> </textarea>
+                </div> *@
+
+                <button type="submit" class="btn btn-success w-100">
+                    @(Model.IsEditMode ? "Update" : "Create")
+                </button>
+            </form>
+        </div>
+        
+    </div>
+</div>
+@section Scripts{
+    <script src="~/assets/plugins/tinymce/tinymce.min.js"></script>
+    <script src="~/lib/flatpickr/flatpickr.js"></script>
+    <script src="~/assets/pages/jquery.form-editor.init.js"></script>
+    <script>
+            flatpickr("#Job_StartDate", {
+                dateFormat: "Y-m-d",
+                allowInput: true,
+                enableTime: false});
+            flatpickr("#Job_ClosingDate", {
+                dateFormat: "Y-m-d",
+                allowInput: true});
+    </script>
+}

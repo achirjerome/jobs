@@ -1,0 +1,357 @@
+﻿@page
+@model Jobs.Pages.Admin.jobs_manager.IndexModel
+@{
+    ViewData["Title"] = "Jobs List";
+    Layout = "_layout2";
+}
+@section Sheets{
+    <link href="~/assets/plugins/datatables/datatables.bootstrap4.min.css" rel="stylesheet" />
+    <link href="~/assets/plugins/datatables/buttons.bootstrap4.min.css" rel="stylesheet" />
+    <link href="~/assets/plugins/datatables/responsive.bootstrap4.min.css" rel="stylesheet" />
+    <link href="~/assets/plugins/sweet-alert2/sweetalert2.min.css" rel="stylesheet" type="text/css" />
+}
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-success">
+            <div class="d-flex justify-content-between mt-4">
+                <h3>Jobs List</h3>
+                <div>
+                    <a asp-page="upsert" class="btn btn-sm btn-info"><i class="mdi mdi-pencil-box-outline"></i>  Create job</a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            @if (TempData["success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show mb-3 mt-2" role="alert">
+                    <strong>Information!</strong> @TempData["success"]
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            }
+            <table class="table table-bordered" id="jobtable">
+                <thead>
+                    <tr>
+                        <th>
+                            #S/N
+                        </th>
+                        <th>
+                            Title
+                        </th>
+                        <th>
+                            Category
+                        </th>
+                        <th>
+                            Department
+                        </th>
+                        <th>
+                            Start Date
+                        </th>
+                        <th>
+                            End Date
+                        </th>
+                        <th>
+                            Status
+                        </th>
+                        <th>
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        
+    </div>
+</div>
+@section Scripts{
+    <script src="~/assets/plugins/datatables/jquery.datatables.min.js"></script>
+    <script src="~/assets/plugins/datatables/datatables.bootstrap4.min.js"></script>
+    <script src="~/assets/plugins/datatables/datatables.buttons.min.js"></script>
+    <!-- Buttons examples -->
+    <script src="~/assets/plugins/datatables/buttons.bootstrap4.min.js"></script>
+
+    <!-- Responsive examples -->
+    <script src="~/assets/plugins/datatables/responsive.bootstrap4.min.js"></script>
+    <script src="~/assets/plugins/datatables/datatables.responsive.min.js"></script>
+    <script src="~/assets/plugins/sweet-alert2/sweetalert2.min.js"></script>
+    <script src="~/lib/jquery.blockUI/jquery.blockUI.js"></script>
+    <script>
+       var table = null;
+        $(document).ready(function () {
+            table = $('#jobtable').DataTable({
+                serverSide: true,
+                processing: true,
+                "searching": true,
+                "paging": true,
+                "info": true,
+                responsive: true,
+                ajax: {
+                    url: '/v1/joblists',
+                    type: 'POST',
+                    dataType: 'json',
+                    },
+                columns: [
+                    {
+                        data: null, orderable: false, searchable: false, width: '5%',
+                        render: function (data, type, row, meta) {
+                            return meta.settings._iDisplayStart + meta.row + 1;
+                        }
+                    },
+                    { data: 'title', "autoWidth": true },
+                    { data: 'category', "autoWidth": true },
+                    { data: 'department', "autoWidth": true },
+                    {
+                        "data": "startDate", "autoWidth": true,
+                        render: function (data, type, row) {
+                            if (data != null) {
+                                var hours = new Date(data).getHours()
+                                let ap = hours >= 12 ? 'pm' : 'am';
+                                return data = data.toLocaleString('YYYY-MM-dd').slice(0, 19).replace('T', ' ') + ' ' + ap;
+                            } else {
+                                return "null";
+                            }
+                        }
+                    },
+                    {
+                        "data": "closingDate", "autoWidth": true,
+                        render: function (data, type, row) {
+                            if (data != null) {
+                                var hours = new Date(data).getHours()
+                                let ap = hours >= 12 ? 'pm' : 'am';
+                                return data = data.toLocaleString('YYYY-MM-dd').slice(0, 19).replace('T', ' ') + ' ' + ap;
+                            } else {
+                                return "null";
+                            }
+                        }
+                    },
+                    {
+                        data: null, orderable: false,
+                        render: function (data, type, row) {
+                            if (data.active) {
+                                return `
+                                    <span class="badge bg-success"><i class="fas fa-angle-down"></i> Active</span>
+                                `;
+                            } else {
+                                return `
+                                        <span class="badge bg-danger"><i class="fas fa-angle-down"></i> Inactive</span>
+                                    `;
+                            }
+                        }
+                    },
+                    {
+                        data: null, orderable: false,
+                        render: function (data, type, row) {
+                            const btnname = !data.active ? 'Reactivate' :'Deactivate' ;
+                            const iconlogo = !data.active ? 'fas fa-unlock-alt' : 'fab fa-expeditedssl';
+
+                            return `<div class="dropdown">
+                                      <button class="btn btn-light" type="button" data-toggle="dropdown" aria-expanded="false">
+                                        <i class="ti-more"></i>
+                                      </button>
+                                      <ul class="dropdown-menu dropdown-menu-light">
+                                        <li><a class="dropdown-item" href="/admin/jobs-manager/upsert?id=${data.id}"><i class="dripicons-document-edit"></i> Edit</a></li>
+                                        <li><a class="dropdown-item btn-action" data-id="${data.id}" data-state="${data.active}" href="#"><i class="${iconlogo}"></i> ${btnname}</a></li>
+                                      </ul>
+                                    </div>`;
+                        }
+                    }
+                ],
+
+                // Language configuration
+                language: {
+                    processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span>',
+                    lengthMenu: 'Show _MENU_ entries',
+                    zeroRecords: 'No matching records found',
+                    info: 'Showing _START_ to _END_ of _TOTAL_ entries',
+                    infoEmpty: 'Showing 0 to 0 of 0 entries',
+                    infoFiltered: '(filtered from _MAX_ total entries)',
+                    search: 'Search:',
+                    paginate: {
+                        first: 'First',
+                        last: 'Last',
+                        next: 'Next',
+                        previous: 'Prev'
+                    }
+                }
+            });
+
+
+
+            $(document).on("click", ".btn-view", function () {
+                const id = $(this).data('id');
+
+                $.ajax({
+                    type: "POST",
+                    url: '/v1/viewmdasuserinformation/' + id,
+                    success: function (data) {
+                        $.unblockUI();
+                        if (data.success) {
+                            // Set the values in the modal
+                            var dx = data.data;
+                            $('.username').val(dx.name);
+                            $('.useremail').val(dx.email);
+                            $('.userposition').val(dx.position);
+                            $('#Userclaim_id').val(dx.id);
+
+                            const incomingRole = dx.roleUser;
+                            $(".userrole option").each(function () {
+                                if ($(this).val() === incomingRole) {
+                                    $(this).prop("selected", true);
+                                    return false;
+                                }
+                            });
+                            if (data.mini.taxItems.length >0) {
+                                var $target = $('.selectionoption2');
+                                $target.empty(); // Clear current options
+                                $target.append('<option value="">**Select an MDA**</option>');
+                                $.each(data.mini.taxItems, function (i, item) {
+                                    if (item.value == dx.mdasname) {
+                                        $target.append('<option selected value="' + item.value + '">' + item.text + '</option>');
+                                    } else {
+                                        $target.append('<option value="' + item.value + '">' + item.text + '</option>');
+                                    }
+                                });
+                            }
+
+                            const incomingMDAsid = dx.role;
+                            $(".selectionoption2 option").each(function () {
+                                if ($(this).val() === incomingMDAsid) {
+                                    $(this).prop("selected", true);
+                                    return false;
+                                }
+                            });
+
+                            renderUserClaims(dx.userClaims);
+                            //data-bs-toggle="modal" data-bs-target="#managemdasModal"
+                            const showoutcome = new bootstrap.Modal('#editUserModal');
+                            showoutcome.show();
+
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: data.message,
+                                footer: 'Message'
+                            });
+                        }
+                    },
+                    beforeSend: function () {
+                        blockcallback();
+                    },
+                    error: function () {
+                        $.unblockUI();
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Something went wrong!',
+                            footer: 'Check internet connectivity'
+                        });
+                    },
+                    complete: function () {
+                        $.unblockUI();
+                    }
+                });
+            });
+
+
+             $(document).on('click', '.btn-action', function () {
+
+                  const id = $(this).data('id');
+
+             const status = $(this).data('status');
+             // Check if the user is active or inactive in a single line
+             let userStatus = status ? 'Are you sure you want to activate this job' : 'Are you sure you want to deactivate this job';
+
+             swal.fire({
+                 title: 'Are you sure?',
+                  text: userStatus,
+                 type: 'warning',
+                  showCancelButton: true,
+                 confirmButtonColor: 'btn-success',
+                 cancelButtonColor: '$danger',
+                 confirmButtonText: 'Yes!',
+                 cancelButtonText: 'No!',
+                 reverseButtons: true
+               }).then((result) => {
+                 if (result.value) {
+                    $.ajax({
+                         type: "POST",
+                         url: '/v1/joblocker?id=' + id,
+                         success: function (data) {
+                             $.unblockUI();
+                             if (data.success) {
+                                 swalWithBootstrapButtons.fire(
+                                     'Information!',
+                                     data.message,
+                                     'success'
+                                 );
+                                 table.ajax.reload(null, false);
+                             } else {
+                                 Swal.fire({
+                                     icon: 'error',
+                                     title: 'Oops...',
+                                     text: data.message,
+                                     footer: 'Message'
+                                 });
+                             }
+                         },
+                         beforeSend: function () {
+                             blockcallback();
+                         },
+                         error: function () {
+                             $.unblockUI();
+                             Swal.fire({
+                                 icon: 'error',
+                                 title: 'Oops...',
+                                 text: 'Something went wrong!',
+                                 footer: 'Check internet connectivity'
+                             });
+                         },
+                         complete: function () {
+                             $.unblockUI();
+                         }
+                     });
+                 } else if (
+                   // Read more about handling dismissals
+                   result.dismiss === Swal.DismissReason.cancel
+                 ) {
+                   swal.fire(
+                     'Cancelled',
+                     'Action aborted',
+                     'info'
+                   )
+                 }
+               })
+               });
+
+        });
+
+
+
+        function blockcallback() {
+            $.blockUI({
+                message: '<div class="bs-spinner mt-4 mt-lg-0"><div class= "spinner-border text-success mr-2 mt-2" style="width: 10rem; height: 10rem;" role="status"><span class="sr-only">Loading...</span></div> ',
+                fadeIn: 800,
+                overlayCSS: {
+                    backgroundColor: '#1b2024',
+                    opacity: 0.8,
+                    zIndex: 1200,
+                    cursor: 'wait'
+                },
+                css: {
+                    border: 0,
+                    color: '#fff',
+                    zIndex: 1201,
+                    padding: 0,
+                    backgroundColor: 'transparent'
+                },
+                onBlock: function () {
+
+                }
+            });
+        }
+
+        
+    </script>
+}

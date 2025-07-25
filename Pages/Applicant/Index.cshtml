@@ -1,0 +1,161 @@
+﻿@page
+@model Jobs.Pages.Applicant.IndexModel
+@{
+    Layout = "_Applicant_Layout";
+}
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px; /* Spacing between columns */
+        margin: 15px 0;
+    }
+
+    .column {
+        flex: 1 0 calc(100% - 20px); /* Mobile: full width */
+        min-width: 150px; /* Minimum column width */
+        padding: 15px;
+        text-align: center;
+        border-radius: 8px; /* Optional: rounded corners */
+    }
+
+    /* Tablet view: 2 columns */
+    @@media (min-width: 768px) {
+        .column {
+            flex: 1 0 calc(50% - 20px);
+        }
+    }
+
+    /* Desktop view: 4 columns */
+    @@media (min-width: 992px) {
+        .column {
+            flex: 1 0 calc(25% - 20px);
+            max-width: calc(25% - 20px);
+        }
+    }
+
+    .column a {
+        display: block;
+        padding: 15px 5px;
+        color: #000;
+        text-decoration: none;
+        font-size: 1.1em;
+        font-weight: 500;
+    }
+
+    .column i {
+        font-size: 2em;
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    .column:hover {
+        transform: translateY(-5px);
+        transition: transform 0.3s ease;
+    }
+
+    .auto-style1 {
+        color: #006600;
+    }
+</style>
+
+<!-- HTML Structure -->
+<h1>Main Menu</h1>
+
+<!-- Registrations Section -->
+<div>
+    <h3 class="auto-style1 text-center">Registrations</h3>
+</div>
+<hr />
+
+<div class="row">
+    <div class="column" style="background-color:cyan;">
+        <a href="StudentReg.aspx">
+            <i class="fas fa-user-edit"></i>
+            Apply
+        </a>
+    </div>
+
+    <div class="column" style="background-color:coral;">
+        <a href="addCourses.aspx">
+            <i class="fas fa-upload"></i>
+            Documents
+        </a>
+    </div>
+
+    <div class="column" style="background-color:violet;">
+        <a href="addCourseofStudy.aspx">
+            <i class="fas fa-user-edit"></i>
+            Subject
+        </a>
+    </div>
+
+    <div class="column" style="background-color:#bbb;">
+        <a href="add_semester_courses">
+            <i class="fas fa-user-edit"></i>
+            Semester
+        </a>
+    </div>
+</div>
+
+<!-- Examination Section -->
+<div>
+    <h3 class="auto-style1 text-center ">Examination</h3>
+</div>
+<hr />
+
+<div class="row">
+    <div class="column" style="background-color:cyan;">
+        <a href="exam_compute">
+            <i class="fas fa-upload"></i>
+            Upload
+        </a>
+    </div>
+
+    <div class="column" style="background-color:coral;">
+        <a href="addCourses.aspx">
+            <i class="fas fa-calculator"></i>
+            Compute
+        </a>
+    </div>
+
+</div>
+
+<!-- Views Section -->
+<div>
+    <h3 class="auto-style1 text-center ">Views</h3>
+</div>
+<hr />
+
+<div class="row">
+    <div class="column" style="background-color:cyan;">
+        <a href="view_result">
+            <i class="fas fa-eye"></i>
+            View Student
+        </a>
+    </div>
+
+    <div class="column" style="background-color:coral;">
+        <a href="view_result">
+            <i class="fas fa-eye"></i>
+            Staff
+        </a>
+    </div>
+    <div class="column" style="background-color:violet;">
+        <a href="addCourseofStudy.aspx">
+            <i class="fas fa-eye "></i>
+            School Fees
+        </a>
+    </div>
+    <div class="column" style="background-color:violet;">
+        <a href="addCourseofStudy.aspx">
+            <i class="fas fa-eye "></i>
+            Subject
+        </a>
+    </div>
+</div>

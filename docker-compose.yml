@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  jobs-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: jobs-api:latest
+    ports:
+      - "8080:8080"   # adjust if you use a different port
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=server=db;port=3306;database=jobsdb;user=root;password=YourStrongPassword
+    depends_on:
+      - db
+    restart: always
+
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: YourStrongPassword
+      MYSQL_DATABASE: jobdb
+    ports:
+      - "3307:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+      - ./initdb:/docker-entrypoint-initdb.d   # seed scripts
+
+
+volumes:
+  dbdata:

@@ -1,0 +1,30 @@
+﻿@page
+@model Jobs.Pages.Admin.CreateJobModel
+@{
+    Layout = "_Admin_Layout";    
+}
+<form method="post">
+    <div class="form-group">
+        <label asp-for="Job.DepartmentId" class="control-label">Department</label>
+        <select asp-for="Job.DepartmentId"
+                asp-items="Model.DepartmentOptions"
+                class="form-control">
+            <option value="">-- Select Department --</option>
+        </select>
+        <span asp-validation-for="Job.DepartmentId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Job.Title" class="control-label">Job Title</label>
+        <input asp-for="Job.Title" class="form-control" />
+        <span asp-validation-for="Job.Title" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Job.Description" class="control-label">Job Description</label>
+        <input asp-for="Job.Description" class="form-control" />
+        <span asp-validation-for="Job.Title" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Create Job</button>
+</form>
